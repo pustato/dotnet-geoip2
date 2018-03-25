@@ -4,10 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using GeoIP.Services;
+using GeoIP.Middleware;
 
 namespace GeoIP
 {
@@ -20,13 +23,29 @@ namespace GeoIP
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+
+            services.AddSingleton<IMaxmindService>(provider =>
+            {
+                var service = new MaxmindDBService();
+
+                var citiesDB = Configuration["GEO_CITY_DB"];
+                var countriesDB = Configuration["GEO_COUNTRY_DB"];
+                var asnDB = Configuration["GEO_ASN_DB"];
+
+                service.InitCitiesDB(citiesDB);
+                service.InitCountriesDB(countriesDB);
+                service.InitASNDB(asnDB);
+
+                return service;
+            });
+
+            services
+                .Configure<RouteOptions>(r => r.LowercaseUrls = true)
+                .AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -34,6 +53,7 @@ namespace GeoIP
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<ExceptionHandleMiddleware>();
             app.UseMvc();
         }
     }

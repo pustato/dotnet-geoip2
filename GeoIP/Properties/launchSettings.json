@@ -19,9 +19,12 @@
     "GeoIP": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/geo/city?ip=128.101.101.101",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "GEO_CITY_DB": "C:\\Users\\Pustato\\Documents\\Visual Studio 2017\\Projects\\GeoIP\\GeoLite2-City.mmdb",
+        "GEO_COUNTRY_DB": "C:\\Users\\Pustato\\Documents\\Visual Studio 2017\\Projects\\GeoIP\\GeoLite2-Country.mmdb",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "GEO_ASN_DB": "C:\\Users\\Pustato\\Documents\\Visual Studio 2017\\Projects\\GeoIP\\GeoLite2-ASN.mmdb"
       },
       "applicationUrl": "http://localhost:52106/"
     }
